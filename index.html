@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yogzz AI & News</title>
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-container: #ffffff;
+            --header-bg: #ffffff;
+            --text-main: #1a1a1a;
+            --text-muted: #5f6368;
+            --border: #dadce0;
+            --input-bg: #f1f3f4;
+            --msg-ai-bg: #e8eaed;
+            --accent: #0088cc;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #121212;
+            --bg-container: #1e1e1e;
+            --header-bg: #1e1e1e;
+            --text-main: #e8eaed;
+            --text-muted: #bdc1c6;
+            --border: #3c4043;
+            --input-bg: #303134;
+            --msg-ai-bg: #303134;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; transition: 0.3s; overflow: hidden; }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-container); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.5s;
+        }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid var(--input-bg);
+            border-top: 5px solid var(--accent); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .chat-container {
+            width: 100%; max-width: 600px; height: 100%; margin: 0 auto; background-color: var(--bg-container);
+            display: flex; flex-direction: column; position: relative; border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+        }
+
+        .header {
+            padding: 12px 18px; background: var(--header-bg); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        /* Logo AI */
+        .logo-box { display: flex; align-items: center; gap: 10px; }
+        .ai-logo {
+            width: 35px; height: 35px; background: linear-gradient(135deg, #0088cc, #00ffcc);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold; font-size: 1.2rem; box-shadow: 0 3px 6px rgba(0,136,204,0.3);
+        }
+
+        .content-area { flex: 1; overflow-y: auto; padding-bottom: 90px; scroll-behavior: smooth; }
+        .page { display: none; padding: 15px; }
+        .page.active { display: flex; flex-direction: column; }
+
+        /* News Card */
+        .news-card {
+            display: flex; gap: 15px; padding: 16px 0; border-bottom: 1px solid var(--border);
+            text-decoration: none; color: inherit;
+        }
+        .news-info { flex: 1; }
+        .news-title { font-size: 1rem; font-weight: 500; line-height: 1.4; margin-bottom: 8px; }
+        .news-img { width: 96px; height: 96px; border-radius: 12px; object-fit: cover; background: #eee; flex-shrink: 0; }
+
+        /* Chat */
+        .msg { padding: 10px 16px; border-radius: 20px; max-width: 85%; font-size: 0.95rem; margin-bottom: 10px; }
+        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+        .ai { align-self: flex-start; background: var(--msg-ai-bg); border-bottom-left-radius: 4px; }
+
+        /* Input */
+        .input-bar {
+            position: absolute; bottom: 0; width: 100%; padding: 10px 15px; background: var(--bg-container);
+            border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px;
+            padding-bottom: max(15px, env(safe-area-inset-bottom));
+        }
+        .input-bar input { flex: 1; padding: 12px 18px; border-radius: 24px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text-main); outline: none; }
+        .btn { background: none; border: none; cursor: pointer; color: var(--text-muted); }
+    </style>
+</head>
+<body data-theme="light">
+
+<div id="loading-overlay">
+    <div class="ai-logo" style="width: 60px; height: 60px; font-size: 2rem; margin-bottom: 20px;">Y</div>
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; font-weight: 500; color: var(--text-muted);">Memulai Yogzz AI...</p>
+</div>
+
+<div class="chat-container">
+    <div class="header">
+        <div class="logo-box">
+            <div class="ai-logo">Y</div>
+            <b id="header-label">Yogzz AI</b>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn" onclick="switchPage()">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16,20H20V16H16M16,14H20V10H16M10,8H14V4H10M16,8H20V4H16M10,14H14V10H10M4,14H8V10H4M4,20H8V16H4M10,20H14V16H10M4,8H8V4H4V8Z" /></svg>
+            </button>
+            <button class="btn" onclick="toggleTheme()">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z" /></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="content-area" id="scroll-box">
+        <div id="page-chat" class="page active">
+            <div class="msg ai">Halo Yogzz! Selamat datang kembali.</div>
+        </div>
+        <div id="page-news" class="page">
+            <div id="news-feed"></div>
+        </div>
+    </div>
+
+    <div class="input-bar" id="input-ui">
+        <input type="text" id="msg-input" placeholder="Tulis pesan ke AI...">
+        <button class="btn" onclick="handleSend()">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="#0088cc"><path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" /></svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    const API_AI = "https://api.siputzx.my.id/api/ai/gemini-lite?prompt=";
+    const API_NEWS = "https://api.siputzx.my.id/api/berita/liputan6";
+    let isNews = false;
+
+    // Loading Sederhana
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            document.getElementById('loading-overlay').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500);
+        }, 1500);
+    });
+
+    function showMiniLoading() {
+        document.getElementById('loading-overlay').style.display = 'flex';
+        document.getElementById('loading-overlay').style.opacity = '1';
+        setTimeout(() => {
+            document.getElementById('loading-overlay').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500);
+        }, 800);
+    }
+
+    function toggleTheme() {
+        const b = document.body;
+        b.setAttribute('data-theme', b.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    }
+
+    function switchPage() {
+        showMiniLoading();
+        isNews = !isNews;
+        document.getElementById('page-chat').classList.toggle('active', !isNews);
+        document.getElementById('page-news').classList.toggle('active', isNews);
+        document.getElementById('input-ui').style.display = isNews ? 'none' : 'flex';
+        document.getElementById('header-label').innerText = isNews ? 'Liputan6 News' : 'Yogzz AI';
+        if(isNews) loadNews();
+    }
+
+    async function loadNews() {
+        const feed = document.getElementById('news-feed');
+        feed.innerHTML = '<p style="text-align: center; padding: 20px;">Mengambil berita terbaru...</p>';
+        try {
+            const res = await fetch(API_NEWS);
+            const json = await res.json();
+            feed.innerHTML = "";
+            
+            json.data.forEach(item => {
+                // Perbaikan Gambar: Mencoba mengambil gambar dari beberapa field berbeda
+                const imgUrl = item.thumbnail || item.thumb || item.image || item.img || "https://placehold.co/400x400?text=Liputan6";
+                
+                feed.innerHTML += `
+                    <a href="${item.url}" target="_blank" class="news-card">
+                        <div class="news-info">
+                            <div class="news-title">${item.title}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">Liputan6 • News</div>
+                        </div>
+                        <img src="${imgUrl}" class="news-img" onerror="this.src='https://placehold.co/100x100?text=No+Image'">
+                    </a>
+                `;
+            });
+        } catch (e) { feed.innerHTML = "Gagal memuat berita."; }
+    }
+
+    async function handleSend() {
+        const inp = document.getElementById('msg-input');
+        if(!inp.value.trim()) return;
+        const txt = inp.value;
+        addMsg(txt, 'user');
+        inp.value = "";
+        try {
+            const res = await fetch(API_AI + encodeURIComponent(txt));
+            const json = await res.json();
+            addMsg(json.data?.parts?.[0]?.text || "AI Error", 'ai');
+        } catch(e) { addMsg("Error koneksi.", 'ai'); }
+    }
+
+    function addMsg(t, s) {
+        const d = document.createElement('div');
+        d.className = `msg ${s}`;
+        d.innerText = t;
+        document.getElementById('page-chat').appendChild(d);
+        document.getElementById('scroll-box').scrollTop = document.getElementById('scroll-box').scrollHeight;
+    }
+
+    document.getElementById('msg-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
+</script>
+</body>
+</html>
