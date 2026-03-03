@@ -1,0 +1,106 @@
+<div class="input-bar">
+        <input type="text" id="msg-input" placeholder="Tanyakan apa saja..." autocomplete="off">
+        
+        <button id="mic-btn" class="btn-send" style="background: #334155; margin-right: 5px;" onclick="startListening()">
+            <svg id="mic-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+
+        <button class="btn-send" onclick="handleSend()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+    </div>
+
+<script>
+    const API_AI = "https://api.siputzx.my.id/api/ai/gemini-lite?prompt=";
+    const micBtn = document.getElementById('mic-btn');
+    const micIcon = document.getElementById('mic-icon');
+    const inp = document.getElementById('msg-input');
+
+    // Fitur Pesan Suara (Speech Recognition)
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'id-ID'; // Set bahasa Indonesia
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+            micBtn.style.background = "#ef4444"; // Berubah merah saat merekam
+            inp.placeholder = "Mendengarkan...";
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            inp.value = transcript;
+            micBtn.style.background = "#334155";
+            inp.placeholder = "Tanyakan apa saja...";
+            // Otomatis kirim setelah ngomong (opsional)
+            handleSend(); 
+        };
+
+        recognition.onerror = () => {
+            micBtn.style.background = "#334155";
+            inp.placeholder = "Gagal mendengar...";
+        };
+
+        recognition.onend = () => {
+            micBtn.style.background = "#334155";
+        };
+
+        function startListening() {
+            recognition.start();
+        }
+    } else {
+        micBtn.style.display = 'none'; // Sembunyikan jika browser tidak support
+    }
+
+    // Fungsi formatText dan handleSend tetep sama kayak sebelumnya...
+    function formatText(text) {
+        return text.replace(/\*\*(.*?)\*\*|\*(.*?)\*/g, (match, g1, g2) => {
+            return `<strong>${g1 || g2}</strong>`;
+        });
+    }
+
+    async function handleSend() {
+        const text = inp.value.trim();
+        if(!text) return;
+
+        addMsg(text, 'user');
+        inp.value = "";
+
+        const loadingId = "load-" + Date.now();
+        const loadDiv = document.createElement('div');
+        loadDiv.className = 'msg ai';
+        loadDiv.id = loadingId;
+        loadDiv.innerText = "Yogzz AI sedang berpikir...";
+        document.getElementById('scroll-box').appendChild(loadDiv);
+        scrollDown();
+
+        try {
+            const res = await fetch(API_AI + encodeURIComponent(text));
+            const json = await res.json();
+            const reply = json.data?.parts?.[0]?.text || "Maaf, respon gagal.";
+            document.getElementById(loadingId).innerHTML = formatText(reply);
+        } catch(e) {
+            document.getElementById(loadingId).innerText = "Server sibuk.";
+        }
+        scrollDown();
+    }
+
+    function addMsg(t, s) {
+        const d = document.createElement('div');
+        d.className = `msg ${s}`;
+        d.innerHTML = s === 'ai' ? formatText(t) : t;
+        document.getElementById('scroll-box').appendChild(d);
+        scrollDown();
+    }
+
+    function scrollDown() {
+        const box = document.getElementById('scroll-box');
+        box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+    }
+
+    inp.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') handleSend();
+    });
+</script>
