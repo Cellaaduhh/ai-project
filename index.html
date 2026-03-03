@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Yogzz AI - Kuro Engine</title>
+    <style>
+        :root {
+            --bg-dark: #070b14;
+            --panel-bg: #111827;
+            --accent: #10b981;
+            --text-main: #e2e8f0;
+            --logo-grad: linear-gradient(45deg, #00dcaf, #0070f3, #7928ca, #ff0080);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Fira Code', 'Courier New', monospace; }
+
+        body { 
+            background: var(--bg-dark); 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            overflow: hidden; 
+            color: var(--text-main);
+        }
+
+        /* LOADER BATERAI JALAN FULL */
+        #loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #070b14; z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .battery-box { width: 80px; height: 40px; border: 3px solid #fff; border-radius: 6px; position: relative; padding: 4px; }
+        .battery-box::after { content: ''; position: absolute; top: 8px; right: -10px; width: 6px; height: 18px; background: #fff; border-radius: 0 3px 3px 0; }
+        .battery-level { height: 100%; background: var(--accent); width: 0%; transition: width 0.1s linear; }
+        .load-text { margin-top: 15px; font-size: 10px; letter-spacing: 2px; color: #64748b; }
+
+        .container { width: 100%; max-width: 500px; display: flex; flex-direction: column; background: rgba(15, 23, 42, 0.95); border-left: 1px solid #334155; border-right: 1px solid #334155; }
+
+        /* HEADER DENGAN LOGO WARNA-WARNI */
+        .header { padding: 15px 20px; background: #111827; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 15px; }
+        .ai-logo-colorful {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: var(--logo-grad);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 112, 243, 0.3);
+            animation: hueRotate 6s linear infinite;
+        }
+        @keyframes hueRotate { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
+
+        .header-info { display: flex; flex-direction: column; }
+        .header-title { font-weight: 900; font-size: 1.1rem; letter-spacing: 1px; color: #fff; }
+        .status-badge { font-size: 9px; color: var(--accent); font-weight: bold; display: flex; align-items: center; gap: 5px; }
+
+        #term-logs { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        
+        /* DASHBOARD BOX */
+        .res-area { 
+            background: #000; border: 1px solid #334155; border-radius: 10px; overflow: hidden;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .res-header { background: #1e1e1e; padding: 8px 15px; display: flex; justify-content: space-between; font-size: 10px; border-bottom: 1px solid #334155; }
+        .res-body { padding: 15px; color: #d1d5db; line-height: 1.6; font-size: 0.9rem; }
+        .res-body strong { color: #fff; border-bottom: 1px solid rgba(16, 185, 129, 0.4); }
+
+        /* INPUT BAR */
+        .input-bar { padding: 20px; background: #111827; border-top: 1px solid #334155; display: flex; gap: 10px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+        input { flex: 1; background: #1e293b; border: 1px solid #334155; padding: 12px 15px; color: #fff; border-radius: 8px; outline: none; font-size: 13px; transition: 0.3s; }
+        input:focus { border-color: var(--accent); background: #0f172a; }
+        .btn-exec { background: var(--accent); color: #000; border: none; padding: 0 20px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+
+        .thinking-star { width: 22px; height: 22px; fill: url(#grad-icon); animation: spin 2s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div id="loader-overlay">
+    <div class="battery-box"><div class="battery-level" id="bat-level"></div></div>
+    <div class="load-text" id="load-info">INITIALIZING...</div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <div class="ai-logo-colorful">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2L14.39 8.26L22 9.27L16.5 14.14L18.18 21.02L12 17.77L5.82 21.02L7.5 14.14L2 9.27L9.61 8.26L12 1Z"/></svg>
+        </div>
+        <div class="header-info">
+            <span class="header-title">YOGZZ-CORE</span>
+            <span class="status-badge"><span style="width:6px; height:6px; background:var(--accent); border-radius:50%;"></span> ONLINE - VERCEL ENGINE</span>
+        </div>
+    </div>
+
+    <div id="term-logs">
+        <div style="color: #64748b; font-size: 10px;">[SYS] Welcome Yogzz. Encryption Active.</div>
+    </div>
+
+    <div class="input-bar">
+        <input type="text" id="msg-input" placeholder="Tanya apa lu..." autocomplete="off">
+        <button class="btn-exec" onclick="handleSend()">EXEC</button>
+    </div>
+</div>
+
+<svg width="0" height="0">
+    <defs>
+        <linearGradient id="grad-icon" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#00dcaf;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ff0080;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+</svg>
+
+<script>
+    const input = document.getElementById('msg-input');
+    const logs = document.getElementById('term-logs');
+    
+    // API LU DI VERCEL
+    const BASE_URL = "https://yogzz-api.vercel.app/api/ai/kuroneko";
+    let currentSession = "";
+
+    // LOADING BATERAI JALAN SAMPE FULL
+    window.onload = () => {
+        let level = 0;
+        const bar = document.getElementById('bat-level');
+        const info = document.getElementById('load-info');
+        
+        const loading = setInterval(() => {
+            level += Math.floor(Math.random() * 5) + 2;
+            if(level >= 100) {
+                level = 100;
+                bar.style.width = level + "%";
+                info.innerText = "READY TO BYPASS";
+                clearInterval(loading);
+                setTimeout(() => {
+                    document.getElementById('loader-overlay').style.opacity = '0';
+                    setTimeout(() => { 
+                        document.getElementById('loader-overlay').style.display = 'none'; 
+                        addLog("System Online. Cepetan nanya!", "#10b981");
+                    }, 600);
+                }, 500);
+            }
+            bar.style.width = level + "%";
+            info.innerText = `LOADING... ${level}%`;
+        }, 50);
+    };
+
+    function addLog(msg, color = "#64748b") {
+        const div = document.createElement('div');
+        div.style.color = color;
+        div.style.fontSize = "11px";
+        div.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        logs.appendChild(div);
+        logs.scrollTop = logs.scrollHeight;
+    }
+
+    async function handleSend() {
+        const query = input.value.trim();
+        if(!query) return;
+
+        // User Entry
+        const u = document.createElement('div');
+        u.innerHTML = `<span style="color:#10b981; font-weight:bold;">root@yogzz:~$</span> ${query}`;
+        logs.appendChild(u);
+        input.value = "";
+
+        // UI Dashboard Box
+        const id = "res-" + Date.now();
+        const box = document.createElement('div');
+        box.className = "res-area";
+        box.innerHTML = `
+            <div class="res-header">
+                <div><span id="dot-${id}" style="color:#fbbf24">●</span> <span id="st-${id}" style="color:#fbbf24">PROCESSING</span></div>
+                <span id="tm-${id}">0ms</span>
+            </div>
+            <div id="body-${id}" class="res-body">
+                <svg class="thinking-star" viewBox="0 0 24 24"><path d="M12 1L14.39 8.26L22 9.27L16.5 14.14L18.18 21.02L12 17.77L5.82 21.02L7.5 14.14L2 9.27L9.61 8.26L12 1Z"/></svg>
+            </div>
+        `;
+        logs.appendChild(box);
+        logs.scrollTop = logs.scrollHeight;
+
+        let start = Date.now();
+        let timer = setInterval(() => { 
+            document.getElementById(`tm-${id}`).innerText = (Date.now() - start) + "ms"; 
+        }, 50);
+
+        try {
+            // Nembak langsung ke Vercel lu pake Session
+            const response = await fetch(`${BASE_URL}?q=${encodeURIComponent(query)}&session=${currentSession}`);
+            const data = await response.json();
+            
+            clearInterval(timer);
+
+            if(data.status) {
+                currentSession = data.session || ""; 
+                document.getElementById(`st-${id}`).innerText = "200_OK";
+                document.getElementById(`st-${id}`).style.color = "#10b981";
+                document.getElementById(`dot-${id}`).style.color = "#10b981";
+                
+                // Parsing bintang jadi bold ala KuroNeko
+                document.getElementById(`body-${id}`).innerHTML = data.response.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
+            } else {
+                throw new Error();
+            }
+        } catch(e) {
+            clearInterval(timer);
+            document.getElementById(`st-${id}`).innerText = "ERR_FETCH";
+            document.getElementById(`st-${id}`).style.color = "#ef4444";
+            document.getElementById(`body-${id}`).innerText = "Gagal nyedot data dari Vercel. Cek API lu!";
+        }
+        logs.scrollTop = logs.scrollHeight;
+    }
+
+    input.addEventListener('keypress', (e) => { if(e.key==='Enter') handleSend(); });
+</script>
+
+</body>
+</html>
