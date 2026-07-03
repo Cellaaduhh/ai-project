@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untuk Cantikku 🌸</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-1:#fff0f5;
+    --pink-2:#ffd9e8;
+    --pink-3:#ff9ebb;
+    --pink-4:#ff6f9c;
+    --purple:#b490ca;
+    --cream:#fff8f3;
+    --text:#7a3b52;
+    --gold:#f6c453;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    font-family:'Quicksand', sans-serif;
+    background:linear-gradient(160deg, var(--pink-1) 0%, #ffe4ee 45%, #f3e0ff 100%);
+    color:var(--text);
+    overflow-x:hidden;
+  }
+
+  /* floating emoji background */
+  .emoji-float{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:1;
+  }
+  .emoji-float span{
+    position:absolute;
+    bottom:-10%;
+    font-size:1.6rem;
+    opacity:0.55;
+    animation:floatUp linear infinite;
+    filter:drop-shadow(0 2px 4px rgba(255,111,156,0.25));
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10%{opacity:0.6;}
+    90%{opacity:0.5;}
+    100%{ transform:translateY(-115vh) translateX(20px) rotate(25deg); opacity:0;}
+  }
+
+  /* WELCOME SCREEN */
+  #welcome{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:radial-gradient(circle at 50% 30%, #ffe0ec 0%, #ffc7dd 45%, #f0b3e0 100%);
+    transition:opacity 1s ease, visibility 1s ease;
+    text-align:center;
+    padding:20px;
+  }
+  #welcome.hide{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  .welcome-emoji{
+    font-size:3.2rem;
+    margin-bottom:10px;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.15);}
+  }
+  #welcome h1{
+    font-family:'Dancing Script', cursive;
+    font-size:clamp(2.8rem, 9vw, 5rem);
+    color:#fff;
+    text-shadow:0 4px 18px rgba(255,111,156,0.6), 0 0 2px rgba(180,60,100,0.4);
+    line-height:1.1;
+  }
+  #welcome p{
+    margin-top:14px;
+    font-size:1.05rem;
+    color:#7a3b52;
+    background:rgba(255,255,255,0.55);
+    padding:8px 20px;
+    border-radius:30px;
+    letter-spacing:0.5px;
+  }
+  #enterBtn{
+    margin-top:34px;
+    border:none;
+    outline:none;
+    cursor:pointer;
+    padding:14px 38px;
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    color:#fff;
+    background:linear-gradient(135deg, var(--pink-4), var(--purple));
+    border-radius:50px;
+    box-shadow:0 8px 20px rgba(255,111,156,0.45);
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  #enterBtn:hover{
+    transform:translateY(-3px) scale(1.04);
+    box-shadow:0 12px 26px rgba(255,111,156,0.55);
+  }
+  #enterBtn:active{ transform:translateY(0) scale(0.98); }
+
+  /* MAIN CONTENT */
+  main{
+    position:relative;
+    z-index:2;
+    max-width:640px;
+    margin:0 auto;
+    padding:40px 20px 60px;
+    text-align:center;
+  }
+  header.page-head{
+    margin-bottom:10px;
+  }
+  header.page-head .eyebrow{
+    display:inline-block;
+    font-size:0.8rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--pink-4);
+    font-weight:700;
+    background:rgba(255,255,255,0.6);
+    padding:5px 16px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+  header.page-head h2{
+    font-family:'Dancing Script', cursive;
+    font-size:clamp(2rem, 7vw, 3.2rem);
+    color:var(--pink-4);
+    text-shadow:0 2px 10px rgba(255,111,156,0.25);
+  }
+  header.page-head p.sub{
+    margin-top:8px;
+    font-size:0.95rem;
+    color:#a06079;
+  }
+
+  /* emoji slider strip */
+  .emoji-strip-wrap{
+    margin:26px 0 34px;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+    mask-image:linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+  }
+  .emoji-strip{
+    display:flex;
+    gap:26px;
+    width:max-content;
+    animation:slideEmoji 18s linear infinite;
+    font-size:2.1rem;
+  }
+  @keyframes slideEmoji{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+
+  /* card carousel */
+  .card-stage{
+    position:relative;
+    height:300px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .quote-card{
+    position:absolute;
+    width:100%;
+    max-width:460px;
+    background:#fff;
+    border-radius:26px;
+    padding:34px 28px 30px;
+    box-shadow:0 18px 40px rgba(255,111,156,0.22), 0 4px 10px rgba(180,60,100,0.08);
+    opacity:0;
+    transform:translateX(40px) scale(0.94);
+    transition:opacity 0.55s ease, transform 0.55s ease;
+    pointer-events:none;
+    border:1px solid #ffe3ee;
+  }
+  .quote-card.active{
+    opacity:1;
+    transform:translateX(0) scale(1);
+    pointer-events:auto;
+  }
+  .quote-card .quote-emoji{
+    font-size:2.4rem;
+    margin-bottom:14px;
+    display:block;
+  }
+  .quote-card p{
+    font-family:'Dancing Script', cursive;
+    font-size:clamp(1.5rem, 5vw, 1.85rem);
+    color:var(--text);
+    line-height:1.45;
+  }
+  .quote-card .num{
+    margin-top:16px;
+    font-size:0.78rem;
+    letter-spacing:1.5px;
+    color:var(--pink-3);
+    font-weight:700;
+    text-transform:uppercase;
+  }
+
+  .controls{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:22px;
+    margin-top:18px;
+  }
+  .ctrl-btn{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+    background:#fff;
+    color:var(--pink-4);
+    font-size:1.3rem;
+    box-shadow:0 6px 16px rgba(255,111,156,0.28);
+    transition:transform 0.2s ease, background 0.2s ease;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .ctrl-btn:hover{
+    transform:scale(1.1);
+    background:var(--pink-4);
+    color:#fff;
+  }
+
+  .dots{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-top:16px;
+    flex-wrap:wrap;
+    max-width:280px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--pink-2);
+    cursor:pointer;
+    transition:background 0.25s ease, transform 0.25s ease;
+  }
+  .dot.active{
+    background:var(--pink-4);
+    transform:scale(1.3);
+  }
+
+  footer{
+    margin-top:44px;
+    font-size:0.85rem;
+    color:#c084a3;
+  }
+  footer .heart{
+    color:var(--pink-4);
+  }
+
+  @media (max-width:480px){
+    .card-stage{ height:340px; }
+    .quote-card{ padding:28px 20px 24px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .emoji-strip, .emoji-float span, .welcome-emoji{ animation:none !important; }
+    .quote-card{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="emoji-float" id="emojiFloat"></div>
+
+<!-- WELCOME SCREEN -->
+<div id="welcome">
+  <div class="welcome-emoji">💗</div>
+  <h1>Welcome Cantiku</h1>
+  <p>ada sesuatu yang manis buat kamu di dalam ✨</p>
+  <button id="enterBtn">Buka ya 🎀</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<main>
+  <header class="page-head">
+    <span class="eyebrow">buat kamu, sayang</span>
+    <h2>Kata Manis Untukmu</h2>
+    <p class="sub">geser buat baca semuanya ya 🥰</p>
+  </header>
+
+  <div class="emoji-strip-wrap">
+    <div class="emoji-strip" id="emojiStrip"></div>
+  </div>
+
+  <div class="card-stage" id="cardStage"></div>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="prevBtn" aria-label="Sebelumnya">‹</button>
+    <button class="ctrl-btn" id="nextBtn" aria-label="Berikutnya">›</button>
+  </div>
+
+  <div class="dots" id="dots"></div>
+
+  <footer>dibuat dengan <span class="heart">♥</span> khusus untukmu</footer>
+</main>
+
+<script>
+  // ---- data ----
+  const quotes = [
+    { emoji:"🌸", text:"Kamu itu alasan aku senyum sendiri tanpa sebab." },
+    { emoji:"🍯", text:"Manis kamu ngalahin semua makanan manis yang pernah aku coba." },
+    { emoji:"🌙", text:"Setiap malam, doa terakhirku selalu ada namamu di dalamnya." },
+    { emoji:"🧸", text:"Peluk kamu itu tempat paling nyaman yang aku punya." },
+    { emoji:"☁️", text:"Kalau rindu bisa dilihat, langit pasti penuh sama namamu." },
+    { emoji:"💌", text:"Kamu bukan cuma pacar, kamu rumah yang selalu pengen aku pulangi." },
+    { emoji:"🌷", text:"Cinta aku ke kamu nggak pernah layu, malah makin mekar tiap hari." },
+    { emoji:"✨", text:"Di antara semua bintang, kamu tetap yang paling bersinar buat aku." },
+    { emoji:"🍬", text:"Senyum kamu itu candu yang nggak pernah bikin aku bosan." },
+    { emoji:"💗", text:"Terima kasih udah jadi cantik, baik, dan jadi milikku, sayang." }
+  ];
+
+  const floatEmojis = ["💖","🌸","✨","🎀","💌","🌷","🍯","💫"];
+  const stripEmojis = ["💗","🌸","🎀","💌","✨","🧸","🍯","🌷","💫","🍬"];
+
+  // floating background emoji
+  const emojiFloatEl = document.getElementById('emojiFloat');
+  for(let i=0;i<18;i++){
+    const s = document.createElement('span');
+    s.textContent = floatEmojis[Math.floor(Math.random()*floatEmojis.length)];
+    s.style.left = Math.random()*100 + '%';
+    s.style.animationDuration = (8 + Math.random()*10) + 's';
+    s.style.animationDelay = (Math.random()*10) + 's';
+    s.style.fontSize = (1.2 + Math.random()*1.4) + 'rem';
+    emojiFloatEl.appendChild(s);
+  }
+
+  // sliding emoji strip (duplicate for seamless loop)
+  const stripEl = document.getElementById('emojiStrip');
+  const doubled = [...stripEmojis, ...stripEmojis, ...stripEmojis, ...stripEmojis];
+  doubled.forEach(e=>{
+    const span = document.createElement('span');
+    span.textContent = e;
+    stripEl.appendChild(span);
+  });
+
+  // card carousel
+  const stage = document.getElementById('cardStage');
+  const dotsWrap = document.getElementById('dots');
+  let current = 0;
+  let autoTimer;
+
+  quotes.forEach((q, i)=>{
+    const card = document.createElement('div');
+    card.className = 'quote-card' + (i===0 ? ' active' : '');
+    card.innerHTML = `<span class="quote-emoji">${q.emoji}</span><p>${q.text}</p><div class="num">${String(i+1).padStart(2,'0')} / ${String(quotes.length).padStart(2,'0')}</div>`;
+    stage.appendChild(card);
+
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i===0 ? ' active' : '');
+    dot.addEventListener('click', ()=> goTo(i));
+    dotsWrap.appendChild(dot);
+  });
+
+  const cards = stage.querySelectorAll('.quote-card');
+  const dots = dotsWrap.querySelectorAll('.dot');
+
+  function goTo(i){
+    cards[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (i + quotes.length) % quotes.length;
+    cards[current].classList.add('active');
+    dots[current].classList.add('active');
+    resetAuto();
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', ()=> goTo(current+1));
+  document.getElementById('prevBtn').addEventListener('click', ()=> goTo(current-1));
+
+  function resetAuto(){
+    clearInterval(autoTimer);
+    autoTimer = setInterval(()=> goTo(current+1), 4500);
+  }
+  resetAuto();
+
+  // swipe support
+  let touchStartX = 0;
+  stage.addEventListener('touchstart', e=> touchStartX = e.touches[0].clientX);
+  stage.addEventListener('touchend', e=>{
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if(diff > 40) goTo(current-1);
+    else if(diff < -40) goTo(current+1);
+  });
+
+  // welcome screen
+  const welcome = document.getElementById('welcome');
+  document.getElementById('enterBtn').addEventListener('click', ()=>{
+    welcome.classList.add('hide');
+  });
+</script>
+</body>
+</html>
